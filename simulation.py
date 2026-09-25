@@ -1,26 +1,26 @@
 import math
 
-SPEED_MULTIPLIER = 1000000000000000000000
+SPEED_MULTIPLIER = 0.1
 
 class Simulation:
     def __init__(self):
         self.G = 0.000000000066743 # big G constant
-        self.bodies = []
+        self.__bodies = []
 
     def addMass(self, mass):
-        self.bodies.append(mass)
+        self.__bodies.append(mass)
 
     def getMasses(self):
-        return self.bodies
+        return self.__bodies
     
     def propagate(self, deltaTime):
-        for mass in self.bodies:
-            mass.propagate(self, self.bodies, deltaTime)
+        for mass in self.__bodies:
+            mass.propagate(self, self.__bodies, deltaTime)
             
 class Mass:
     def __init__(self, posVector, mass, velocity):
         self.pos = posVector
-        self.mass = 1
+        self.mass = mass
         self.velocity = velocity
 
 
@@ -28,10 +28,10 @@ class Mass:
         forces = []
 
         for mass in bodies:
+            if mass == self: continue
             # calculate the distance between masses
             directionVector = Vector3.subtract(mass.pos, self.pos)
             distance = directionVector.magnitude()
-            if distance == 0.0: continue
 
             # calculate individual force
             forceMagnitude = SPEED_MULTIPLIER * simulation.G * ((self.mass * mass.mass) / pow(distance / 2, 2))
@@ -42,17 +42,18 @@ class Mass:
             forces.append(forceVector)
 
         # sum forces
-        netForce = Vector3(0,0,0)
+        netForce = Vector3(0.0,0.0,0.0)
         for force in forces:
-            Vector3.add(force, netForce)
-        
+            netForce = Vector3.add(force, netForce)
+            # print(netForce)
         # calculate acceleration per time
         acceleration = netForce.multiply(deltaTime / self.mass)
 
         # add acceleration per time to velocity
         self.velocity = Vector3.add(self.velocity, acceleration)
 
-        print(self.velocity)
+        # print(self.velocity)
+
         # add velocity per time to displacement
         self.pos = Vector3.add(self.pos, self.velocity)
         
