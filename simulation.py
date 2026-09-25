@@ -1,10 +1,10 @@
 import math
 
-SPEED_MULTIPLIER = 0.1
+SPEED_MULTIPLIER = 0.001
+G = 0.000000000066743 # big G constant
 
 class Simulation:
     def __init__(self):
-        self.G = 0.000000000066743 # big G constant
         self.__bodies = []
 
     def addMass(self, mass):
@@ -34,7 +34,7 @@ class Mass:
             distance = directionVector.magnitude()
 
             # calculate individual force
-            forceMagnitude = SPEED_MULTIPLIER * simulation.G * ((self.mass * mass.mass) / pow(distance / 2, 2))
+            forceMagnitude = SPEED_MULTIPLIER * G * ((self.mass * mass.mass) / pow(distance / 2, 2))
             forceDirection = directionVector.normalized()
 
             forceVector = forceDirection.multiply(forceMagnitude)
