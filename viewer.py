@@ -46,9 +46,9 @@ class Viewer:
         # self.simulation.addMass(Mass(Vector3(randint(0,self.__WIDTH),10,randint(0,self.__HEIGHT)),pow(10,randint(10,18)),Vector3(0.0,0.0,0.0)))
         
         
-        self.mainloop()
+        self.__mainloop()
 
-    def mainloop(self):
+    def __mainloop(self):
         # Main game loop
         while self.__running:
             # Handle events
@@ -58,19 +58,19 @@ class Viewer:
                     sys.exit()
             
             # handle user input
-            self.handleInput()
+            self.__handleInput()
             
             # update simulation
             self.simulation.propagate(self.__deltaTime)
 
             # draw simulation
-            self.drawScreen()
+            self.__drawScreen()
             
             # flip the display to show the new frame
             pygame.display.flip()
             self.__deltaTime = self.__fpsClock.tick(self.__fps) / 1000
             
-    def handleInput(self):
+    def __handleInput(self):
         # -- keyboard --
         keys = pygame.key.get_pressed()
         
@@ -103,16 +103,14 @@ class Viewer:
         if pygame.mouse.get_pressed()[0]:
             self.__viewerOffset[0] += mouseDelta[0]
             self.__viewerOffset[1] += mouseDelta[1]
-        
-        
-        
-    def drawScreen(self):
+         
+    def __drawScreen(self):
         self.screen.fill((0, 0, 0)) # clear the screen
-        self.drawGridAndAxis()
-        self.drawMasses()
-        self.drawCoordinates()
+        self.__drawGridAndAxis()
+        self.__drawMasses()
+        self.__drawCoordinates()
     
-    def drawGridAndAxis(self):
+    def __drawGridAndAxis(self):
         # grid
         lineGap = int( (1 / self.__zoomMultiplier) * 100 )
         while lineGap < self.__WIDTH / 10:
@@ -143,10 +141,10 @@ class Viewer:
                 width=2
             )
 
-    def drawCoordinates(self):
-        self.drawText((f"{-self.__viewerOffset[0]}, {self.__viewerOffset[1]}"), (self.__WIDTH-100, self.__HEIGHT-100))
+    def __drawCoordinates(self):
+        self.__drawText((f"{-self.__viewerOffset[0]}, {self.__viewerOffset[1]}"), (self.__WIDTH-100, self.__HEIGHT-100))
             
-    def drawMasses(self):
+    def __drawMasses(self):
         for mass in self.simulation.getMasses():
 
             pos = (self.__centre[0] + self.__viewerOffset[0] + (mass.pos.x / self.__zoomMultiplier), self.__centre[1] + self.__viewerOffset[1] + mass.pos.z / self.__zoomMultiplier)
@@ -158,9 +156,9 @@ class Viewer:
             )
 
             if mass.tag != "none":
-                self.drawText(mass.tag, pos)
+                self.__drawText(mass.tag, pos)
 
-    def drawText(self, text:str, pos:tuple):
+    def __drawText(self, text:str, pos:tuple):
         text = self.font.render(text, True, (0, 0, 0), pygame.Color(200,200,200))
         text.set_alpha(255)
         textRect = text.get_rect()

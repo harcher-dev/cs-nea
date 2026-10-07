@@ -7,12 +7,12 @@ class Simulation:
     def __init__(self, fileToLoad="none"):
         self.__bodies = []
         if fileToLoad != "none": 
-            self.addMassesFromFile(CSVDataManager().readDataFromFile(fileToLoad))
+            self.__addMassesFromFile(CSVDataManager().readDataFromFile(fileToLoad))
 
     def addMass(self, mass):
         self.__bodies.append(mass)
     
-    def addMassesFromFile(self, data):
+    def __addMassesFromFile(self, data):
         for row in data:
             posVector = Vector3(row['posX'], row['posY'], row['posZ'])
             velocityVector = Vector3(row['velX'], row['velY'], row['velZ'])
