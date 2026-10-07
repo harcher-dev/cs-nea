@@ -1,30 +1,42 @@
 import math
-
-SPEED_MULTIPLIER = 0.001
 G = 0.000000000066743 # big G constant
 
+from csv_data_manager import *
+
 class Simulation:
-    def __init__(self):
+    def __init__(self, fileToLoad="none"):
         self.__bodies = []
+        if fileToLoad != "none": 
+            self.addMassesFromFile(CSVDataManager().readDataFromFile(fileToLoad))
 
     def addMass(self, mass):
         self.__bodies.append(mass)
+    
+    def addMassesFromFile(self, data):
+        for row in data:
+            posVector = Vector3(row['posX'], row['posY'], row['posZ'])
+            velocityVector = Vector3(row['velX'], row['velY'], row['velZ'])
+
+            mass = int(row['mass'])
+            tag = row['tag']
+
+            self.addMass(Mass(posVector, mass, velocityVector, tag))
 
     def getMasses(self):
         return self.__bodies
     
     def propagate(self, deltaTime):
         for mass in self.__bodies:
-            mass.propagate(self, self.__bodies, deltaTime)
+            mass.propagate(self.__bodies, deltaTime)
             
 class Mass:
-    def __init__(self, posVector, mass, velocity):
+    def __init__(self, posVector, mass, velocity, tag="none"):
         self.pos = posVector
         self.mass = mass
         self.velocity = velocity
+        self.tag = tag
 
-
-    def propagate(self, simulation:Simulation, bodies, deltaTime):
+    def propagate(self, bodies, deltaTime):
         forces = []
 
         for mass in bodies:
@@ -34,7 +46,7 @@ class Mass:
             distance = directionVector.magnitude()
 
             # calculate individual force
-            forceMagnitude = SPEED_MULTIPLIER * G * ((self.mass * mass.mass) / pow(distance / 2, 2))
+            forceMagnitude = G * ((self.mass * mass.mass) / pow(distance / 2, 2))
             forceDirection = directionVector.normalized()
 
             forceVector = forceDirection.multiply(forceMagnitude)
@@ -54,12 +66,12 @@ class Mass:
 
         # print(self.velocity)
 
-        # add velocity per time to displacement
-        self.pos = Vector3.add(self.pos, self.velocity)
+        # add the velocity multplied by deltatime to displacement
+        self.pos = Vector3.add(self.pos, self.velocity).multiply(deltaTime)
         
 class Vector3:
     def __init__(self, x,y,z):
-        self.x, self.y, self.z = (x,y,z)
+        self.x, self.y, self.z = (float(x),float(y),float(z))
         
     def __str__(self):
         return f"({self.x}, {self.y}, {self.z})"
@@ -81,3 +93,4 @@ class Vector3:
     @staticmethod
     def add(l, m):
         return Vector3(l.x+m.x, l.y+m.y, l.z+m.z)
+    
